@@ -1,0 +1,20 @@
+---
+// Language chooser at the site root: French browsers go to /fr/, everyone else to /en/.
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Pedram Aminharati</title>
+    <meta name="robots" content="noindex" />
+    <link rel="canonical" href="/en/" />
+    <script is:inline>
+      location.replace((navigator.language || '').toLowerCase().startsWith('fr') ? '/fr/' : '/en/');
+    </script>
+    <meta http-equiv="refresh" content="0; url=/en/" />
+  </head>
+  <body>
+    <p><a href="/en/">English</a> | <a href="/fr/">Français</a></p>
+  </body>
+</html>

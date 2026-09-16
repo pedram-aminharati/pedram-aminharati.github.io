@@ -1,0 +1,104 @@
+@import "tailwindcss";
+
+/*
+  Design tokens.
+  Teal carries over from the printed CV so site and PDF read as one identity.
+  Signal amber is reserved for the robot arm and keyboard focus.
+*/
+@theme {
+  --font-display: "Barlow Semi Condensed", "Arial Narrow", sans-serif;
+  --font-serif: "Source Serif 4 Variable", Georgia, serif;
+
+  --color-paper: #f1f3f2;
+  --color-ink: #16222b;
+  --color-muted: #56656e;
+  --color-line: #cfd8d6;
+  --color-teal: #0e6b65;
+  --color-signal: #d99500;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-paper: #0f1a1d;
+    --color-ink: #e4ebe9;
+    --color-muted: #93a3a8;
+    --color-line: #2a3a3e;
+    --color-teal: #5bb8ae;
+    --color-signal: #f2b632;
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+    color-scheme: light dark;
+  }
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-serif);
+    font-size: 1.125rem;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    line-height: 1.1;
+    text-wrap: balance;
+  }
+  a {
+    color: inherit;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-signal);
+    outline-offset: 3px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
+
+@layer components {
+  .link {
+    text-decoration: underline;
+    text-decoration-color: var(--color-line);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    transition: text-decoration-color 150ms;
+  }
+  .link:hover {
+    text-decoration-color: currentColor;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 1.125rem;
+    padding: 0.6rem 1.1rem;
+    border: 1.5px solid var(--color-teal);
+    border-radius: 2px;
+    text-decoration: none;
+    transition: background-color 150ms, color 150ms;
+  }
+  .btn-primary {
+    background: var(--color-teal);
+    color: var(--color-paper);
+  }
+  .btn-primary:hover {
+    background: transparent;
+    color: var(--color-teal);
+  }
+  .btn-secondary {
+    color: var(--color-teal);
+  }
+  .btn-secondary:hover {
+    background: var(--color-teal);
+    color: var(--color-paper);
+  }
+}

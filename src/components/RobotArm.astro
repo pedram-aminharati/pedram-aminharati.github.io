@@ -1,0 +1,319 @@
+---
+interface Props {
+  caption: string;
+  label: string;
+}
+
+const { caption, label } = Astro.props;
+
+// Geometry in SVG units. Keep in sync with the constants in the script below.
+const BASE = { x: 200, y: 330 };
+const REACH = 110 + 90 + 55;
+---
+
+<figure class="arm">
+  <svg id="arm" viewBox="0 0 400 360" role="img" aria-label={label}>
+    <defs>
+      <pattern id="arm-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+        <path d="M 20 0 L 0 0 0 20" fill="none" class="grid-line" />
+      </pattern>
+    </defs>
+    <rect x="0" y="0" width="400" height={BASE.y} fill="url(#arm-grid)" />
+    <path
+      class="workspace"
+      d={`M ${BASE.x - REACH} ${BASE.y} A ${REACH} ${REACH} 0 0 1 ${BASE.x + REACH} ${BASE.y}`}
+    />
+    <line class="floor" x1="0" y1={BASE.y} x2="400" y2={BASE.y} />
+    <polyline id="arm-trace" class="trace" points="" />
+    <circle id="arm-target" class="target" r="5" cx="200" cy="150" />
+    <rect class="base" x={BASE.x - 28} y={BASE.y - 10} width="56" height="10" />
+    <g id="arm-links">
+      <line class="link-seg" data-i="0" />
+      <line class="link-seg" data-i="1" />
+      <line class="link-seg" data-i="2" />
+    </g>
+    <path id="arm-gripper" class="gripper" d="" />
+    <g id="arm-joints">
+      <circle class="joint" r="7" data-i="0" />
+      <circle class="joint" r="6" data-i="1" />
+      <circle class="joint" r="5" data-i="2" />
+    </g>
+  </svg>
+  <figcaption>
+    <span id="arm-readout" class="readout" aria-hidden="true">q1 0° q2 0° q3 0°</span>
+    <span class="block">{caption}</span>
+  </figcaption>
+</figure>
+
+<style>
+  .arm svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--color-line);
+    touch-action: pan-y;
+    cursor: crosshair;
+  }
+  .grid-line {
+    stroke: var(--color-line);
+    stroke-width: 0.5;
+  }
+  .workspace {
+    fill: none;
+    stroke: var(--color-muted);
+    stroke-width: 1;
+    stroke-dasharray: 3 5;
+    opacity: 0.6;
+  }
+  .floor {
+    stroke: var(--color-ink);
+    stroke-width: 1.5;
+  }
+  .base {
+    fill: var(--color-ink);
+  }
+  .link-seg {
+    stroke: var(--color-ink);
+    stroke-width: 12;
+    stroke-linecap: round;
+  }
+  .link-seg[data-i='1'] {
+    stroke-width: 10;
+  }
+  .link-seg[data-i='2'] {
+    stroke-width: 8;
+  }
+  .joint {
+    fill: var(--color-paper);
+    stroke: var(--color-teal);
+    stroke-width: 2.5;
+  }
+  .gripper {
+    fill: none;
+    stroke: var(--color-ink);
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .trace {
+    fill: none;
+    stroke: var(--color-signal);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .target {
+    fill: none;
+    stroke: var(--color-signal);
+    stroke-width: 1.5;
+  }
+  figcaption {
+    margin-top: 0.75rem;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: var(--color-muted);
+  }
+  .readout {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-teal);
+    white-space: pre;
+  }
+</style>
+
+<script>
+  type Vec = { x: number; y: number };
+
+  const BASE: Vec = { x: 200, y: 330 };
+  const LENGTHS = [110, 90, 55];
+  const REACH = LENGTHS.reduce((a, b) => a + b, 0);
+  const FLOOR_MARGIN = 18;
+  const TRACE_POINTS = 90;
+
+  const svg = document.getElementById('arm') as unknown as SVGSVGElement | null;
+  if (svg) init(svg);
+
+  function init(svg: SVGSVGElement) {
+    const links = [...svg.querySelectorAll<SVGLineElement>('.link-seg')];
+    const joints = [...svg.querySelectorAll<SVGCircleElement>('.joint')];
+    const gripper = svg.querySelector<SVGPathElement>('#arm-gripper')!;
+    const traceEl = svg.querySelector<SVGPolylineElement>('#arm-trace')!;
+    const targetEl = svg.querySelector<SVGCircleElement>('#arm-target')!;
+    const readout = document.getElementById('arm-readout')!;
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Start in a relaxed elbow-up pose so the solver has a coherent seed.
+    let pts: Vec[] = [
+      { ...BASE },
+      { x: BASE.x - 40, y: BASE.y - 100 },
+      { x: BASE.x + 40, y: BASE.y - 160 },
+      { x: BASE.x + 80, y: BASE.y - 140 },
+    ];
+    const trace: Vec[] = [];
+    let goal: Vec = { x: 260, y: 170 };
+    let target: Vec = { ...goal };
+    let pointerActive = false;
+    let idleTimer = 0;
+    let t0 = performance.now();
+    let visible = true;
+    let frame = 0;
+
+    // FABRIK inverse kinematics with a fixed base.
+    function solve(p: Vec[], goalPt: Vec) {
+      const d = Math.hypot(goalPt.x - BASE.x, goalPt.y - BASE.y);
+      if (d >= REACH) {
+        for (let i = 0; i < LENGTHS.length; i++) {
+          const r = Math.hypot(goalPt.x - p[i].x, goalPt.y - p[i].y);
+          const k = LENGTHS[i] / r;
+          p[i + 1] = { x: (1 - k) * p[i].x + k * goalPt.x, y: (1 - k) * p[i].y + k * goalPt.y };
+        }
+        return;
+      }
+      for (let iter = 0; iter < 12; iter++) {
+        p[p.length - 1] = { ...goalPt };
+        for (let i = p.length - 2; i >= 0; i--) {
+          const r = Math.hypot(p[i + 1].x - p[i].x, p[i + 1].y - p[i].y) || 1e-6;
+          const k = LENGTHS[i] / r;
+          p[i] = { x: (1 - k) * p[i + 1].x + k * p[i].x, y: (1 - k) * p[i + 1].y + k * p[i].y };
+        }
+        p[0] = { ...BASE };
+        for (let i = 0; i < p.length - 1; i++) {
+          const r = Math.hypot(p[i + 1].x - p[i].x, p[i + 1].y - p[i].y) || 1e-6;
+          const k = LENGTHS[i] / r;
+          p[i + 1] = { x: (1 - k) * p[i].x + k * p[i + 1].x, y: (1 - k) * p[i].y + k * p[i + 1].y };
+        }
+        const end = p[p.length - 1];
+        if (Math.hypot(end.x - goalPt.x, end.y - goalPt.y) < 0.2) break;
+      }
+      // Keep intermediate joints above the floor.
+      for (let i = 1; i < p.length; i++) p[i].y = Math.min(p[i].y, BASE.y - 6);
+    }
+
+    function clampGoal(v: Vec): Vec {
+      return { x: Math.max(8, Math.min(392, v.x)), y: Math.min(v.y, BASE.y - FLOOR_MARGIN) };
+    }
+
+    function angle(a: Vec, b: Vec) {
+      return Math.atan2(-(b.y - a.y), b.x - a.x);
+    }
+
+    function wrapDeg(rad: number) {
+      let deg = (rad * 180) / Math.PI;
+      while (deg > 180) deg -= 360;
+      while (deg < -180) deg += 360;
+      return Math.round(deg);
+    }
+
+    function render() {
+      links.forEach((el, i) => {
+        el.setAttribute('x1', pts[i].x.toFixed(1));
+        el.setAttribute('y1', pts[i].y.toFixed(1));
+        el.setAttribute('x2', pts[i + 1].x.toFixed(1));
+        el.setAttribute('y2', pts[i + 1].y.toFixed(1));
+      });
+      joints.forEach((el, i) => {
+        el.setAttribute('cx', pts[i].x.toFixed(1));
+        el.setAttribute('cy', pts[i].y.toFixed(1));
+      });
+
+      // Two-finger gripper at the tool tip, aligned with the last link.
+      const tip = pts[3];
+      const a = Math.atan2(tip.y - pts[2].y, tip.x - pts[2].x);
+      const ux = Math.cos(a), uy = Math.sin(a);
+      const nx = -uy, ny = ux;
+      const w = 11, l = 14;
+      gripper.setAttribute(
+        'd',
+        `M ${tip.x + nx * w + ux * l} ${tip.y + ny * w + uy * l} L ${tip.x + nx * w} ${tip.y + ny * w} ` +
+          `L ${tip.x - nx * w} ${tip.y - ny * w} L ${tip.x - nx * w + ux * l} ${tip.y - ny * w + uy * l}`,
+      );
+
+      traceEl.setAttribute('points', trace.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' '));
+      targetEl.setAttribute('cx', goal.x.toFixed(1));
+      targetEl.setAttribute('cy', goal.y.toFixed(1));
+
+      const q1 = angle(pts[0], pts[1]);
+      const q2 = angle(pts[1], pts[2]) - q1;
+      const q3 = angle(pts[2], pts[3]) - angle(pts[1], pts[2]);
+      const fmt = (v: number) => `${wrapDeg(v)}°`.padStart(5, ' ');
+      readout.textContent = `q1 ${fmt(q1)}   q2 ${fmt(q2)}   q3 ${fmt(q3)}`;
+    }
+
+    function step(dt: number) {
+      target.x += (goal.x - target.x) * Math.min(1, dt * 8);
+      target.y += (goal.y - target.y) * Math.min(1, dt * 8);
+      solve(pts, target);
+      trace.push({ ...pts[3] });
+      if (trace.length > TRACE_POINTS) trace.shift();
+      render();
+    }
+
+    // Lemniscate of Bernoulli: the idle demo trajectory.
+    function idleGoal(time: number): Vec {
+      const s = time * 0.00055;
+      const denom = 1 + Math.sin(s) ** 2;
+      return { x: 200 + (125 * Math.cos(s)) / denom, y: 165 + (90 * Math.sin(s) * Math.cos(s)) / denom };
+    }
+
+    let last = performance.now();
+    function loop(now: number) {
+      const dt = Math.min(0.05, (now - last) / 1000);
+      last = now;
+      if (!pointerActive) goal = idleGoal(now - t0);
+      step(dt);
+      frame = visible ? requestAnimationFrame(loop) : 0;
+    }
+
+    function toSvg(e: PointerEvent): Vec {
+      const pt = svg.createSVGPoint();
+      pt.x = e.clientX;
+      pt.y = e.clientY;
+      const m = svg.getScreenCTM();
+      const p = m ? pt.matrixTransform(m.inverse()) : pt;
+      return { x: p.x, y: p.y };
+    }
+
+    function onPointer(e: PointerEvent) {
+      pointerActive = true;
+      window.clearTimeout(idleTimer);
+      goal = clampGoal(toSvg(e));
+      if (reducedMotion) {
+        target = { ...goal };
+        solve(pts, target);
+        trace.length = 0;
+        render();
+      }
+    }
+
+    svg.addEventListener('pointermove', onPointer);
+    svg.addEventListener('pointerdown', onPointer);
+    svg.addEventListener('pointerleave', () => {
+      idleTimer = window.setTimeout(() => {
+        pointerActive = false;
+        t0 = performance.now();
+      }, 1500);
+    });
+
+    solve(pts, target);
+    render();
+
+    if (!reducedMotion) {
+      new IntersectionObserver(([entry]) => {
+        visible = entry.isIntersecting && !document.hidden;
+        if (visible && !frame) {
+          last = performance.now();
+          frame = requestAnimationFrame(loop);
+        }
+      }).observe(svg);
+      document.addEventListener('visibilitychange', () => {
+        visible = !document.hidden;
+        if (visible && !frame) {
+          last = performance.now();
+          frame = requestAnimationFrame(loop);
+        }
+      });
+    }
+  }
+</script>

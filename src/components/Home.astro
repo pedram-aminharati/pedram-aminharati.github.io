@@ -1,0 +1,167 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from './Header.astro';
+import Hero from './Hero.astro';
+import Section from './Section.astro';
+import type { SiteContent } from '../data/types';
+
+interface Props {
+  t: SiteContent;
+}
+
+const { t } = Astro.props;
+const SELF = 'Aminharati P.';
+
+// Entity-encode the address so naive scrapers do not pick it up from the HTML.
+const encode = (s: string) => [...s].map((c) => `&#${c.codePointAt(0)};`).join('');
+const emailHtml = encode(t.contact.email);
+---
+
+<Base t={t}>
+  <Header t={t} />
+  <main>
+    <Hero t={t} />
+
+    <Section id="about" title={t.about.title}>
+      <div class="max-w-[38em] space-y-5">
+        {t.about.paragraphs.map((p) => <p>{p}</p>)}
+      </div>
+      <dl class="mt-10 grid grid-cols-2 gap-x-8 gap-y-6 border-t border-line pt-8 md:grid-cols-4">
+        {
+          t.about.facts.map((f) => (
+            <div>
+              <dt class="font-display text-4xl font-semibold text-teal">{f.value}</dt>
+              <dd class="mt-1 text-base leading-snug text-muted">{f.label}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </Section>
+
+    <Section id="work" title={t.projects.title}>
+      <p class="max-w-[38em] text-muted">{t.projects.intro}</p>
+      <div class="mt-8 grid gap-x-10 md:grid-cols-2">
+        {
+          t.projects.items.map((p) => (
+            <article class="border-t-2 border-ink py-6">
+              {p.image && <img src={p.image.src} alt={p.image.alt} loading="lazy" class="mb-4 aspect-[4/3] w-full object-cover" />}
+              <h3 class="text-2xl">{p.title}</h3>
+              <p class="mt-1 font-display text-lg text-teal">{p.context}</p>
+              <p class="mt-3">{p.summary}</p>
+              <ul class="mt-4 flex flex-wrap gap-2" aria-label="Tools and methods">
+                {p.tags.map((tag) => (
+                  <li class="border border-line px-2 py-0.5 font-display text-base text-muted">{tag}</li>
+                ))}
+              </ul>
+            </article>
+          ))
+        }
+      </div>
+    </Section>
+
+    <Section id="experience" title={t.experience.title}>
+      <ol class="relative border-l border-line">
+        {
+          t.experience.items.map((job) => (
+            <li class="relative pb-10 pl-8 last:pb-0">
+              <span class="absolute top-2 -left-[5px] size-[9px] rounded-full border-2 border-teal bg-paper" aria-hidden="true" />
+              <p class="font-display text-lg text-teal">{job.dates}</p>
+              <h3 class="mt-1 text-2xl">{job.role}</h3>
+              <p class="text-muted">{job.org}, {job.place}</p>
+              <ul class="mt-3 max-w-[40em] list-disc space-y-1 pl-5 marker:text-muted">
+                {job.points.map((pt) => <li>{pt}</li>)}
+              </ul>
+            </li>
+          ))
+        }
+      </ol>
+    </Section>
+
+    <Section id="publications" title={t.publications.title}>
+      <ol class="space-y-8">
+        {
+          t.publications.items.map((pub) => (
+            <li class="max-w-[42em]">
+              <p class="text-xl leading-snug font-semibold">{pub.title}</p>
+              <p class="mt-2 text-base text-muted">
+                {pub.authors.split(SELF).map((part, i, arr) => (
+                  <>
+                    {part}
+                    {i < arr.length - 1 && <strong class="font-semibold text-ink">{SELF}</strong>}
+                  </>
+                ))}
+              </p>
+              <p class="mt-1 text-base italic">{pub.venue}</p>
+              <a class="link mt-2 inline-block font-display text-lg text-teal" href={pub.url} rel="noopener">
+                {t.publications.readLabel}
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </Section>
+
+    <Section id="skills" title={t.skills.title}>
+      <dl class="grid gap-x-10 gap-y-6 sm:grid-cols-2">
+        {
+          t.skills.groups.map((g) => (
+            <div class="border-t border-line pt-3">
+              <dt class="font-display text-xl font-semibold">{g.name}</dt>
+              <dd class="mt-1 text-base leading-relaxed text-muted">
+                <ul class="flex flex-wrap gap-x-4 gap-y-0.5">
+                  {g.items.map((s) => <li>{s}</li>)}
+                </ul>
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+    </Section>
+
+    <Section id="education" title={t.education.title}>
+      <ul class="space-y-7">
+        {
+          t.education.items.map((d) => (
+            <li class="grid gap-1 sm:grid-cols-[9rem_1fr] sm:gap-6">
+              <p class="font-display text-lg text-teal">{d.dates}</p>
+              <div class="max-w-[40em]">
+                <h3 class="text-2xl">{d.degree}</h3>
+                <p class="text-muted">{d.school}</p>
+                {d.note && <p class="mt-1 text-base">{d.note}</p>}
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+      <h3 class="mt-12 text-2xl">{t.education.teachingTitle}</h3>
+      <ul class="mt-3 max-w-[40em] list-disc space-y-1 pl-5 marker:text-muted">
+        {t.education.teaching.map((c) => <li>{c}</li>)}
+      </ul>
+    </Section>
+
+    <Section id="contact" title={t.contact.title}>
+      <p class="max-w-[34em] text-xl leading-relaxed">{t.contact.text}</p>
+      <p class="mt-8">
+        <a class="font-display text-[clamp(1.5rem,4vw,2.5rem)] font-semibold break-all text-teal underline decoration-line decoration-2 underline-offset-8 hover:decoration-teal" id="email" href="#contact" set:html={emailHtml} />
+      </p>
+      <ul class="mt-8 flex flex-wrap gap-3">
+        <li><a class="btn btn-secondary" href="https://www.linkedin.com/in/pedram-aminharati-298b3376/" rel="me noopener">LinkedIn</a></li>
+        <li><a class="btn btn-secondary" href="https://github.com/pedram-aminharati" rel="me noopener">GitHub</a></li>
+        <li><a class="btn btn-primary" href="/cv/Pedram_Aminharati_CV_EN.pdf" download>{t.nav.downloadCv}</a></li>
+      </ul>
+      {t.contact.cvNote && <p class="mt-3 text-base text-muted">{t.contact.cvNote}</p>}
+    </Section>
+  </main>
+
+  <script>
+    const email = document.getElementById('email');
+    if (email) email.setAttribute('href', `mailto:${email.textContent}`);
+  </script>
+
+  <footer class="border-t border-line">
+    <div class="mx-auto flex max-w-6xl justify-between px-4 py-8 text-base text-muted sm:px-8">
+      <p>{t.footer}</p>
+      <p>{new Date().getFullYear()}</p>
+    </div>
+  </footer>
+</Base>

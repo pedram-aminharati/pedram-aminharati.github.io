@@ -1,0 +1,52 @@
+---
+import '@fontsource-variable/source-serif-4';
+import '@fontsource/barlow-semi-condensed/500.css';
+import '@fontsource/barlow-semi-condensed/600.css';
+import '../styles/global.css';
+import type { SiteContent } from '../data/types';
+
+interface Props {
+  t: SiteContent;
+}
+
+const { t } = Astro.props;
+const site = Astro.site!;
+const canonical = new URL(`/${t.lang}/`, site).href;
+
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Pedram Aminharati',
+  jobTitle: t.hero.role,
+  url: canonical,
+  address: { '@type': 'PostalAddress', addressLocality: 'Paris', addressCountry: 'FR' },
+  alumniOf: ['Arts et Métiers ParisTech', 'Universität Klagenfurt', 'K. N. Toosi University of Technology', 'Sharif University of Technology'],
+  sameAs: ['https://www.linkedin.com/in/pedram-aminharati-298b3376/', 'https://github.com/pedram-aminharati'],
+};
+---
+
+<!doctype html>
+<html lang={t.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{t.meta.title}</title>
+    <meta name="description" content={t.meta.description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="en" href={new URL('/en/', site).href} />
+    <link rel="alternate" hreflang="fr" href={new URL('/fr/', site).href} />
+    <link rel="alternate" hreflang="x-default" href={new URL('/en/', site).href} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#f1f3f2" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0f1a1d" media="(prefers-color-scheme: dark)" />
+    <meta property="og:type" content="profile" />
+    <meta property="og:title" content={t.meta.title} />
+    <meta property="og:description" content={t.meta.description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={t.lang === 'fr' ? 'fr_FR' : 'en_US'} />
+    <script type="application/ld+json" set:html={JSON.stringify(person)} />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

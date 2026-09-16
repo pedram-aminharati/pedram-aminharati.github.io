@@ -1,0 +1,28 @@
+---
+import type { SiteContent } from '../data/types';
+import RobotArm from './RobotArm.astro';
+
+interface Props {
+  t: SiteContent;
+}
+
+const { t } = Astro.props;
+---
+
+<section id="hero" class="mx-auto grid max-w-6xl items-center gap-10 px-4 pt-12 pb-16 sm:px-8 lg:grid-cols-12 lg:pt-20 lg:pb-24">
+  <div class="lg:col-span-7">
+    <h1 class="text-[clamp(3.25rem,10vw,7rem)] leading-[0.9] tracking-[-0.01em]">
+      Pedram<br />Aminharati
+    </h1>
+    <p class="mt-6 font-display text-2xl font-medium text-teal sm:text-3xl">{t.hero.role}</p>
+    <p class="mt-1 text-base text-muted">{t.hero.degree}</p>
+    <p class="mt-6 max-w-[34em] text-xl leading-relaxed">{t.hero.pitch}</p>
+    <div class="mt-8 flex flex-wrap gap-3">
+      <a class="btn btn-primary" href="/cv/Pedram_Aminharati_CV_EN.pdf" download>{t.nav.downloadCv}</a>
+      <a class="btn btn-secondary" href="#contact">{t.hero.ctaContact}</a>
+    </div>
+  </div>
+  <div class="lg:col-span-5">
+    <RobotArm caption={t.hero.armCaption} label={t.hero.armLabel} />
+  </div>
+</section>
