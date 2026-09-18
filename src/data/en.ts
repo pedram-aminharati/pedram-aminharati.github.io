@@ -25,6 +25,7 @@ export const en: SiteContent = {
     armCaption:
       'Move your pointer over this panel. A three-joint arm solves inverse kinematics for it in real time.',
     armLabel: 'Interactive planar robot arm that follows the pointer',
+    portraitAlt: 'Portrait of Pedram Aminharati',
   },
   about: {
     title: 'About',
@@ -35,7 +36,7 @@ export const en: SiteContent = {
     ],
     facts: [
       { value: '5 years', label: 'of robotics on real hardware' },
-      { value: '2', label: 'international journal papers' },
+      { value: '4', label: 'international journal papers, plus a conference paper' },
       { value: '2026', label: 'PhD, Arts et Métiers and CNRS' },
       { value: 'C1', label: 'English, with Persian native and French in progress' },
     ],
@@ -57,6 +58,10 @@ export const en: SiteContent = {
         tags: ['Diffusion policy', 'Flow matching', 'Imitation learning', 'DAgger', 'PyTorch'],
         href: '/en/work/two-hands-one-policy/',
         hrefLabel: 'Read the case study',
+        preview: {
+          src: '/work/two-hands/expert-seed100000.mp4',
+          label: 'Watch two hands rotate the block with a force couple',
+        },
       },
       {
         title: 'AI-corrected trajectories for automated fiber placement',
@@ -154,20 +159,51 @@ export const en: SiteContent = {
   publications: {
     title: 'Publications',
     readLabel: 'Read the article',
+    orcidLabel: 'ORCID 0009-0008-2062-8571',
+    orcidUrl: 'https://orcid.org/0009-0008-2062-8571',
     items: [
       {
-        authors: 'Aminharati P., Shirinbayan M., Fitoussi J., Benfriha K., Meraghni F.',
-        title: 'AI-driven advances in composite materials for hydrogen storage vessels: a review',
+        authors: 'Aminharati P., Shirinbayan M., Benfriha K., Meraghni F., Fitoussi J.',
+        title:
+          'Optimization of composite overwrapped pressure vessel stacking sequences via genetic algorithms: a triadic evaluation of Tsai-Wu, Hashin and Puck failure criteria',
+        venue: 'Composites Part C: Open Access, vol. 21, 100796, 2026',
+        url: 'https://doi.org/10.1016/j.jcomc.2026.100796',
+      },
+      {
+        authors: 'Nikooharf M. H., Benfriha K., Aminharati P., Bahlouli N., Shirinbayan M.',
+        title:
+          'Kinematics-driven machine learning framework for predictive optimization of geometrical accuracy and mechanical properties in fused filament fabrication',
+        venue: 'The International Journal of Advanced Manufacturing Technology, published online August 2026',
+        url: 'https://doi.org/10.1007/s00170-026-19039-9',
+      },
+      {
+        authors: 'Aminharati P.',
+        title: 'Physics-informed and data-driven modelling of composite hydrogen pressure vessels under extreme loading',
+        venue: 'PhD thesis, Arts et Métiers (ENSAM Paris), defended January 2026',
+        url: 'https://theses.fr/2026ENAME009',
+        kind: 'PhD thesis',
+      },
+      {
+        authors: 'Aminharati P., Shirinbayan M., Benfriha K., Meraghni F., Fitoussi J.',
+        title: 'AI-driven advances in composite materials for hydrogen storage vessels: A review',
         venue: 'International Journal of Hydrogen Energy, vol. 171, 151288, 2025',
-        url: 'https://www.sciencedirect.com/science/article/pii/S0360319925042909',
+        url: 'https://doi.org/10.1016/j.ijhydene.2025.151288',
+        kind: 'Review',
       },
       {
         authors:
           'Nikooharf M. H., Shirinbayan M., Ghodsian N., Aminharati P., Bahlouli N., Fitoussi J., Benfriha K.',
         title:
           'Toward advance/digitalized FFF: real-time multimodal synchronized data acquisition and ML/DL-driven process optimization',
-        venue: 'Progress in Additive Manufacturing, 10, 9195–9212, 2025',
+        venue: 'Progress in Additive Manufacturing, vol. 10, issue 11, 9195–9212, 2025',
         url: 'https://doi.org/10.1007/s40964-025-01187-1',
+      },
+      {
+        authors: 'Mehran N., Haghighi A., Aminharati P., Nikolov N., Soylu A., Roman D., Prodan R.',
+        title: 'Comparison of microservice call rate predictions for replication in the cloud',
+        venue: 'IEEE/ACM 16th International Conference on Utility and Cloud Computing (UCC), 1–7, 2023',
+        url: 'https://doi.org/10.1145/3603166.3632566',
+        kind: 'Conference paper',
       },
     ],
   },

@@ -1,0 +1,98 @@
+---
+interface Props {
+  src: string;
+  label: string;
+  href: string;
+}
+
+const { src, label, href } = Astro.props;
+---
+
+<a class="preview" href={href} aria-label={label}>
+  <video src={src} muted loop playsinline preload="none" tabindex="-1" aria-hidden="true"></video>
+  <span class="hint">{label}</span>
+</a>
+
+<script is:inline>
+  /*
+    The clip only downloads once it is close to the viewport, and only plays for
+    visitors who have not asked for reduced motion — otherwise the card shows a
+    still first frame. Keeping it out of the initial page load matters because
+    this sits on the home page.
+  */
+  (() => {
+    const wrap = document.currentScript.previousElementSibling;
+    if (!wrap) return;
+    const v = wrap.querySelector('video');
+    if (!v) return;
+
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let loaded = false;
+
+    const load = () => {
+      if (loaded) return;
+      loaded = true;
+      v.preload = 'auto';
+      v.load();
+      if (!still.matches) v.play().catch(() => {});
+    };
+
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (!e.isIntersecting) continue;
+            load();
+            io.disconnect();
+          }
+        },
+        { rootMargin: '200px' },
+      );
+      io.observe(wrap);
+    } else {
+      load();
+    }
+
+    still.addEventListener('change', () => {
+      if (still.matches) v.pause();
+      else if (loaded) v.play().catch(() => {});
+    });
+  })();
+</script>
+
+<style>
+  .preview {
+    position: relative;
+    display: block;
+    margin-bottom: 1.25rem;
+    border: 1px solid var(--color-line);
+    border-radius: 2px;
+    overflow: hidden;
+    background: var(--color-ink);
+    text-decoration: none;
+    line-height: 0;
+  }
+  .preview video {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+  }
+  .hint {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 2.5rem 0.9rem 0.7rem;
+    font-family: var(--font-display);
+    font-size: 1.0625rem;
+    line-height: 1.2;
+    color: #f1f3f2;
+    background: linear-gradient(to top, rgb(6 14 17 / 0.85), rgb(6 14 17 / 0));
+  }
+  .preview:hover .hint {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+</style>

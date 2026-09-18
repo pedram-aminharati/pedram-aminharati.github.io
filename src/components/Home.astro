@@ -4,6 +4,7 @@ import Header from './Header.astro';
 import Hero from './Hero.astro';
 import Section from './Section.astro';
 import TeachingBand from './TeachingBand.astro';
+import ProjectPreview from './ProjectPreview.astro';
 import type { SiteContent } from '../data/types';
 
 interface Props {
@@ -47,6 +48,7 @@ const emailHtml = encode(t.contact.email);
         {
           t.projects.items.map((p) => (
             <article class="border-t-2 border-ink py-6">
+              {p.preview && p.href && <ProjectPreview src={p.preview.src} label={p.preview.label} href={p.href} />}
               {p.image && <img src={p.image.src} alt={p.image.alt} loading="lazy" class="mb-4 aspect-[4/3] w-full object-cover" />}
               <h3 class="text-2xl">{p.title}</h3>
               <p class="mt-1 font-display text-lg text-teal">{p.context}</p>
@@ -92,6 +94,7 @@ const emailHtml = encode(t.contact.email);
         {
           t.publications.items.map((pub) => (
             <li class="max-w-[42em]">
+              {pub.kind && <p class="font-display text-base text-teal">{pub.kind}</p>}
               <p class="text-xl leading-snug font-semibold">{pub.title}</p>
               <p class="mt-2 text-base text-muted">
                 {pub.authors.split(SELF).map((part, i, arr) => (
@@ -109,6 +112,11 @@ const emailHtml = encode(t.contact.email);
           ))
         }
       </ol>
+      <p class="mt-10 border-t border-line pt-6">
+        <a class="link font-display text-lg" href={t.publications.orcidUrl} rel="noopener">
+          {t.publications.orcidLabel}
+        </a>
+      </p>
     </Section>
 
     <Section id="skills" title={t.skills.title}>

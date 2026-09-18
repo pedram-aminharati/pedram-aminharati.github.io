@@ -1,0 +1,46 @@
+---
+import { Image } from 'astro:assets';
+import portrait from '../assets/portrait.jpg';
+
+interface Props {
+  alt: string;
+}
+
+const { alt } = Astro.props;
+
+/*
+  The source is 640x640, so the largest width requested here (288px) is well
+  inside it — the portrait is never upscaled and stays sharp on a 2x screen.
+*/
+---
+
+<span class="portrait">
+  <Image src={portrait} alt={alt} widths={[144, 288]} sizes="(min-width: 64rem) 144px, 104px" quality={90} />
+</span>
+
+<style>
+  .portrait {
+    display: inline-block;
+    line-height: 0;
+    border-radius: 50%;
+    /* A ring drawn in the CV teal, separated from the photograph by a hairline
+       of paper so it reads as a frame rather than a glow. */
+    box-shadow:
+      0 0 0 3px var(--color-paper),
+      0 0 0 4.5px var(--color-teal);
+  }
+  .portrait :global(img) {
+    width: 104px;
+    height: 104px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center 22%;
+    display: block;
+  }
+  @media (min-width: 64rem) {
+    .portrait :global(img) {
+      width: 144px;
+      height: 144px;
+    }
+  }
+</style>

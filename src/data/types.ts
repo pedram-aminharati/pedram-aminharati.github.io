@@ -11,6 +11,8 @@ export interface Project {
   href?: string;
   /** Label for that link. Required whenever href is set. */
   hrefLabel?: string;
+  /** Silent looping clip shown on the card. Requires href. */
+  preview?: { src: string; label: string };
 }
 
 export interface Job {
@@ -26,6 +28,8 @@ export interface Publication {
   title: string;
   venue: string;
   url: string;
+  /** Shown as a small marker when the item is not a journal article. */
+  kind?: string;
 }
 
 export interface Degree {
@@ -123,6 +127,7 @@ export interface SiteContent {
     ctaContact: string;
     armCaption: string;
     armLabel: string;
+    portraitAlt: string;
   };
   about: {
     title: string;
@@ -133,7 +138,7 @@ export interface SiteContent {
   teachingBand: { alt: string; caption: string; place: string };
   projects: { title: string; intro: string; items: Project[] };
   experience: { title: string; items: Job[] };
-  publications: { title: string; readLabel: string; items: Publication[] };
+  publications: { title: string; readLabel: string; orcidLabel: string; orcidUrl: string; items: Publication[] };
   skills: { title: string; groups: { name: string; items: string[] }[] };
   education: {
     title: string;
