@@ -1,0 +1,129 @@
+---
+import type { CaseStudy } from '../data/types';
+
+interface Props {
+  table: CaseStudy['table'];
+  lang: string;
+}
+
+const { table, lang } = Astro.props;
+const dec = (n: number, d: number) => {
+  const s = n.toFixed(d);
+  return lang === 'fr' ? s.replace('.', ',') : s;
+};
+---
+
+<div class="wrap">
+  <table>
+    <caption class="sr-only">{table.title}</caption>
+    <thead>
+      <tr>
+        <th scope="col">{table.head.variant}</th>
+        <th scope="col" class="num">{table.head.coverage}</th>
+        <th scope="col" class="num">{table.head.success}</th>
+        <th scope="col" class="num">{table.head.min}</th>
+        <th scope="col" class="num">{table.head.steps}</th>
+        <th scope="col" class="num">{table.head.ms}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        table.rows.map((r) => (
+          <tr class:list={[{ teacher: r.teacher }]}>
+            <th scope="row">{r.variant}</th>
+            <td class="num strong" data-label={table.head.coverage}>{dec(r.coverage, 3)}</td>
+            <td class="num" data-label={table.head.success}>{dec(r.success, 2)}</td>
+            <td class="num" data-label={table.head.min}>{r.min === null ? '—' : dec(r.min, 3)}</td>
+            <td class="num" data-label={table.head.steps}>{r.steps}</td>
+            <td class="num" data-label={table.head.ms}>{r.ms === null ? '—' : r.ms < 10 ? dec(r.ms, 1) : r.ms}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>
+
+<style>
+  .wrap {
+    margin-top: 2rem;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1rem;
+  }
+  thead th {
+    font-family: var(--font-display);
+    font-weight: 600;
+    text-align: left;
+    color: var(--color-muted);
+    border-bottom: 1.5px solid var(--color-ink);
+    padding: 0 0.75rem 0.5rem 0;
+  }
+  tbody th {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    text-align: left;
+    padding: 0.7rem 0.75rem 0.7rem 0;
+    border-bottom: 1px solid var(--color-line);
+  }
+  tbody td {
+    padding: 0.7rem 0.75rem 0.7rem 0;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  thead .num {
+    text-align: right;
+  }
+  .strong {
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+  }
+  .teacher th,
+  .teacher td {
+    color: var(--color-muted);
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* Below the small-tablet width the table becomes one block per variant, so
+     nothing needs a horizontal scrollbar to be read. */
+  @media (max-width: 47.99rem) {
+    thead {
+      display: none;
+    }
+    tr {
+      display: block;
+      padding: 0.9rem 0;
+      border-bottom: 1px solid var(--color-line);
+    }
+    tbody th {
+      display: block;
+      border: 0;
+      padding: 0 0 0.5rem;
+      font-family: var(--font-display);
+      font-size: 1.125rem;
+    }
+    tbody td {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      border: 0;
+      padding: 0.15rem 0;
+    }
+    tbody td::before {
+      content: attr(data-label);
+      color: var(--color-muted);
+    }
+  }
+</style>

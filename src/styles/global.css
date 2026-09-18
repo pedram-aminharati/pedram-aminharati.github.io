@@ -15,6 +15,17 @@
   --color-line: #cfd8d6;
   --color-teal: #0e6b65;
   --color-signal: #d99500;
+
+  /*
+    Chart marks are their own steps, not the interface colours.
+    The CV teal falls below the OKLCH chroma floor (C 0.079) and reads as grey
+    when it becomes a data mark, so charts use a saturated sibling instead.
+    Both pairs validated for lightness band, chroma, CVD separation and
+    contrast against their own surface.
+  */
+  --color-mark-a: #00897b;
+  --color-mark-b: #d99500;
+  --color-mark-ref: #7c8a91;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -25,6 +36,12 @@
     --color-line: #2a3a3e;
     --color-teal: #5bb8ae;
     --color-signal: #f2b632;
+
+    /* Re-stepped for the dark surface, not flipped: the light steps sit
+       outside the dark lightness band (0.48–0.67). */
+    --color-mark-a: #19a294;
+    --color-mark-b: #b88000;
+    --color-mark-ref: #8b99a0;
   }
 }
 

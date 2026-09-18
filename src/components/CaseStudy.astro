@@ -1,0 +1,349 @@
+---
+import '@fontsource-variable/source-serif-4';
+import '@fontsource/barlow-semi-condensed/500.css';
+import '@fontsource/barlow-semi-condensed/600.css';
+import '../styles/global.css';
+import type { CaseStudy } from '../data/types';
+import StatStrip from './StatStrip.astro';
+import VideoCompare from './VideoCompare.astro';
+import ResultsTable from './ResultsTable.astro';
+import CoverageChart from './CoverageChart.astro';
+import DaggerChart from './DaggerChart.astro';
+
+interface Props {
+  t: CaseStudy;
+}
+
+const { t } = Astro.props;
+const site = Astro.site!;
+const canonical = new URL(`/${t.lang}/work/${t.slug}/`, site).href;
+
+const article = {
+  '@context': 'https://schema.org',
+  '@type': 'ScholarlyArticle',
+  headline: t.hero.title,
+  description: t.meta.description,
+  author: { '@type': 'Person', name: 'Pedram Aminharati' },
+  inLanguage: t.lang,
+  url: canonical,
+  datePublished: '2026-09',
+  ...(t.hero.arxivHref ? { sameAs: [t.hero.arxivHref] } : {}),
+};
+
+/* Prose sections are rendered in the order the content declares, with the
+   results block and the two charts injected after the ones they belong to. */
+const AFTER_TABLE = 'factorisations';
+const AFTER_DAGGER = 'dagger';
+---
+
+<!doctype html>
+<html lang={t.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{t.meta.title}</title>
+    <meta name="description" content={t.meta.description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="en" href={new URL(`/en/work/${t.slug}/`, site).href} />
+    <link rel="alternate" hreflang="fr" href={new URL(`/fr/work/${t.slug}/`, site).href} />
+    <link rel="alternate" hreflang="x-default" href={new URL(`/en/work/${t.slug}/`, site).href} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#f1f3f2" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0f1a1d" media="(prefers-color-scheme: dark)" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content={t.hero.title} />
+    <meta property="og:description" content={t.meta.description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL('/work/two-hands/fig-environment.png', site).href} />
+    <meta property="og:locale" content={t.lang === 'fr' ? 'fr_FR' : 'en_US'} />
+    <script type="application/ld+json" set:html={JSON.stringify(article)} />
+  </head>
+
+  <body>
+    <header class="topbar">
+      <div class="inner">
+        <a class="link" href={t.back.href}>{t.back.label}</a>
+        <a class="link" href={t.switchTo.href} hreflang={t.switchTo.label.toLowerCase()} title={t.switchTo.name}>
+          {t.switchTo.label}
+        </a>
+      </div>
+    </header>
+
+    <main>
+      <article>
+        <div class="lede">
+          <p class="kicker">{t.hero.kicker}</p>
+          <h1>{t.hero.title}</h1>
+          <p class="standfirst">{t.hero.standfirst}</p>
+          <p class="actions">
+            <a class="btn btn-primary" href={t.hero.paperHref}>{t.hero.paperLabel}</a>
+            {t.hero.arxivHref && <a class="btn btn-secondary" href={t.hero.arxivHref}>{t.hero.arxivLabel}</a>}
+          </p>
+          <StatStrip stats={t.stats} />
+        </div>
+
+        <section class="block" aria-labelledby="film-title">
+          <h2 id="film-title">{t.video.title}</h2>
+          <div class="body">
+            <p class="intro">{t.video.intro}</p>
+            <VideoCompare video={t.video} lang={t.lang} />
+          </div>
+        </section>
+
+        {
+          t.sections.map((s) => (
+            <>
+              <section class="block" aria-labelledby={`${s.id}-title`}>
+                <h2 id={`${s.id}-title`}>{s.title}</h2>
+                <div class="body prose">
+                  {s.paragraphs.map((p) => (
+                    <p>{p}</p>
+                  ))}
+                  {s.id === 'testbed' && (
+                    <div class="testbed-media">
+                      {t.figures.map((f) => (
+                        <figure class="fig">
+                          <img src={f.src} alt={f.alt} loading="lazy" decoding="async" />
+                          <figcaption>{f.caption}</figcaption>
+                        </figure>
+                      ))}
+                      <figure class="fig">
+                        <video
+                          src={t.testbedClip.src}
+                          muted
+                          loop
+                          playsinline
+                          controls
+                          preload="none"
+                          aria-label={t.testbedClip.caption}></video>
+                        <figcaption>{t.testbedClip.caption}</figcaption>
+                      </figure>
+                    </div>
+                  )}
+                </div>
+              </section>
+
+              {s.id === AFTER_TABLE && (
+                <section class="block" aria-labelledby="results-title">
+                  <h2 id="results-title">{t.table.title}</h2>
+                  <div class="body">
+                    <p class="intro">{t.table.intro}</p>
+                    <ResultsTable table={t.table} lang={t.lang} />
+                    <p class="note">{t.table.caption}</p>
+                    <div class="chart-slot">
+                      <CoverageChart
+                        title={t.coverageChart.title}
+                        caption={t.coverageChart.caption}
+                        rows={t.table.rows}
+                        lang={t.lang}
+                      />
+                    </div>
+                  </div>
+                </section>
+              )}
+
+              {s.id === AFTER_DAGGER && (
+                <section class="block" aria-labelledby="dagger-chart-title">
+                  <h2 id="dagger-chart-title">{t.daggerChart.title}</h2>
+                  <div class="body">
+                    <DaggerChart
+                      title={t.daggerChart.title}
+                      caption={t.daggerChart.caption}
+                      roundLabel={t.daggerChart.roundLabel}
+                      series={t.daggerChart.series}
+                      lang={t.lang}
+                    />
+                  </div>
+                </section>
+              )}
+            </>
+          ))
+        }
+
+        <section class="block close" aria-labelledby="close-title">
+          <h2 id="close-title">{t.close.title}</h2>
+          <div class="body">
+            <p class="closing">{t.close.text}</p>
+            <p class="actions">
+              <a class="btn btn-primary" href={t.hero.paperHref}>{t.close.cta}</a>
+            </p>
+          </div>
+        </section>
+      </article>
+    </main>
+
+    <footer class="foot">
+      <div class="inner">
+        <p>{t.footer}</p>
+        <a class="link" href={t.back.href}>{t.back.label}</a>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style>
+  .topbar {
+    border-bottom: 1px solid var(--color-line);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: color-mix(in srgb, var(--color-paper) 92%, transparent);
+    backdrop-filter: blur(6px);
+  }
+  .inner {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 0.9rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    font-family: var(--font-display);
+    font-size: 1.0625rem;
+  }
+
+  .lede {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 3.5rem 1rem 3rem;
+  }
+  .kicker {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.0625rem;
+    color: var(--color-muted);
+    max-width: 40em;
+  }
+  h1 {
+    margin: 0.75rem 0 0;
+    font-size: clamp(2.75rem, 8vw, 5.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.01em;
+    max-width: 14em;
+  }
+  .standfirst {
+    margin: 1.75rem 0 0;
+    max-width: 34em;
+    font-size: 1.3125rem;
+    line-height: 1.55;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 2rem 0 3rem;
+  }
+  .close .actions {
+    margin-bottom: 0;
+  }
+
+  /* Same sticky-heading rhythm as the home page sections, so the case study
+     reads as part of the site rather than a separate template. */
+  .block {
+    border-top: 1px solid var(--color-line);
+    display: grid;
+    max-width: 72rem;
+    margin: 0 auto;
+    gap: 1.5rem;
+    padding: 3.5rem 1rem;
+  }
+  .block h2 {
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
+    margin: 0;
+  }
+  .body {
+    min-width: 0;
+  }
+  .prose p {
+    max-width: 38em;
+    margin: 0 0 1.25rem;
+  }
+  .prose p:last-child {
+    margin-bottom: 0;
+  }
+  .intro {
+    max-width: 38em;
+    margin: 0 0 1.5rem;
+    color: var(--color-muted);
+  }
+  .note {
+    max-width: 38em;
+    margin: 1.25rem 0 0;
+    font-size: 1rem;
+    color: var(--color-muted);
+  }
+  .chart-slot {
+    margin-top: 3.5rem;
+    padding-top: 2.5rem;
+    border-top: 1px solid var(--color-line);
+  }
+  .testbed-media {
+    display: grid;
+    gap: 2rem;
+    margin-top: 2.5rem;
+  }
+  .fig {
+    margin: 0;
+  }
+  .fig img,
+  .fig video {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--color-line);
+    border-radius: 2px;
+  }
+  .fig video {
+    background: var(--color-ink);
+  }
+  @media (min-width: 52rem) {
+    .testbed-media {
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+    }
+  }
+  .fig figcaption {
+    margin-top: 0.85rem;
+    max-width: 38em;
+    font-size: 1rem;
+    color: var(--color-muted);
+  }
+  .closing {
+    max-width: 38em;
+    margin: 0;
+    font-size: 1.1875rem;
+  }
+
+  .foot {
+    border-top: 1px solid var(--color-line);
+  }
+  .foot .inner {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    color: var(--color-muted);
+  }
+  .foot p {
+    margin: 0;
+  }
+
+  @media (min-width: 40rem) {
+    .inner,
+    .lede,
+    .block {
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+  }
+  @media (min-width: 64rem) {
+    .block {
+      grid-template-columns: 3fr 9fr;
+      gap: 2.5rem;
+      padding-top: 5rem;
+      padding-bottom: 5rem;
+    }
+    .block h2 {
+      position: sticky;
+      top: 5.5rem;
+      align-self: start;
+    }
+  }
+</style>

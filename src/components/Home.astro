@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import Header from './Header.astro';
 import Hero from './Hero.astro';
 import Section from './Section.astro';
+import TeachingBand from './TeachingBand.astro';
 import type { SiteContent } from '../data/types';
 
 interface Props {
@@ -38,6 +39,8 @@ const emailHtml = encode(t.contact.email);
       </dl>
     </Section>
 
+    <TeachingBand t={t} />
+
     <Section id="work" title={t.projects.title}>
       <p class="max-w-[38em] text-muted">{t.projects.intro}</p>
       <div class="mt-8 grid gap-x-10 md:grid-cols-2">
@@ -53,6 +56,13 @@ const emailHtml = encode(t.contact.email);
                   <li class="border border-line px-2 py-0.5 font-display text-base text-muted">{tag}</li>
                 ))}
               </ul>
+              {p.href && (
+                <p class="mt-4">
+                  <a class="btn btn-secondary" href={p.href}>
+                    {p.hrefLabel}
+                  </a>
+                </p>
+              )}
             </article>
           ))
         }

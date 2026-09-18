@@ -1,0 +1,65 @@
+---
+import { Picture } from 'astro:assets';
+import teaching from '../assets/teaching-robotics.png';
+import type { SiteContent } from '../data/types';
+
+interface Props {
+  t: SiteContent;
+}
+
+const { t } = Astro.props;
+---
+
+<figure class="band">
+  <Picture
+    src={teaching}
+    alt={t.teachingBand.alt}
+    widths={[720, 1080, 1440]}
+    sizes="100vw"
+    formats={['avif', 'webp']}
+    fallbackFormat="webp"
+    loading="lazy"
+    decoding="async"
+  />
+  <figcaption>
+    <p class="caption">{t.teachingBand.caption}</p>
+    <p class="place">{t.teachingBand.place}</p>
+  </figcaption>
+</figure>
+
+<style>
+  .band {
+    margin: 0;
+    border-top: 1px solid var(--color-line);
+  }
+  .band :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 70vh;
+    object-fit: cover;
+    object-position: center 40%;
+  }
+  figcaption {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 1.25rem 1rem 0;
+  }
+  .caption {
+    margin: 0;
+    max-width: 34em;
+    font-size: 1.125rem;
+  }
+  .place {
+    margin: 0.35rem 0 0;
+    font-family: var(--font-display);
+    font-size: 1.0625rem;
+    color: var(--color-muted);
+  }
+  @media (min-width: 40rem) {
+    figcaption {
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+  }
+</style>

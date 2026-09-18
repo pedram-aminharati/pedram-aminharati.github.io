@@ -40,10 +40,24 @@ export const fr: SiteContent = {
       { value: 'C1', label: 'en anglais, persan langue maternelle, français en cours d’apprentissage' },
     ],
   },
+  teachingBand: {
+    alt: 'Pedram Aminharati enseignant dans un amphithéâtre comble aux Arts et Métiers, une simulation de robot projetée sur l’écran derrière lui.',
+    caption: 'Séance de robotique aux Arts et Métiers ParisTech. L’écran montre le simulateur avec lequel les étudiants abordent la cinématique et le suivi de trajectoire avant de passer au matériel.',
+    place: 'Robotique, Arts et Métiers ParisTech, Paris',
+  },
   projects: {
     title: 'Travaux choisis',
     intro: 'Projets de recherche et d’ingénierie, des robots de production aux politiques apprises.',
     items: [
+      {
+        title: 'Deux mains, une politique',
+        context: 'Étude compagnon de Diffusion Policy, 2026',
+        summary:
+          'Diffusion Policy traite deux bras en les concaténant dans un seul vecteur d’action, sans jamais ablater ce choix. J’ai construit une version à deux mains de Push-T avec un expert scripté fondé sur des couples de forces, puis comparé trois factorisations de la distribution d’actions à deux mains sous une seule recette et des données identiques. Conjointe et meneur–suiveur sont indiscernables à 0,964 de couverture ; l’échantillonnage indépendant perd dix points de réussite à marginales égales. Un seul pas de flow matching divise la latence par cent, et trois rondes de DAgger ont dégradé la politique — un échec qu’il a fallu mesurer, et non régler, pour l’expliquer.',
+        tags: ['Politique de diffusion', 'Flow matching', 'Apprentissage par imitation', 'DAgger', 'PyTorch'],
+        href: '/fr/work/two-hands-one-policy/',
+        hrefLabel: 'Lire l’étude de cas',
+      },
       {
         title: 'Trajectoires corrigées par IA pour le placement automatisé de fibres',
         context: 'AMVALOR, laboratoires PIMM et LCFC, depuis 2023',

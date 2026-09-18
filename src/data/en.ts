@@ -40,10 +40,24 @@ export const en: SiteContent = {
       { value: 'C1', label: 'English, with Persian native and French in progress' },
     ],
   },
+  teachingBand: {
+    alt: 'Pedram Aminharati lecturing in a full amphitheatre at Arts et Métiers, a robot simulation projected on the screen behind him.',
+    caption: 'Teaching a robotics session at Arts et Métiers ParisTech. The screen shows the simulator students use to build up kinematics and trajectory tracking before they touch the hardware.',
+    place: 'Robotics, Arts et Métiers ParisTech, Paris',
+  },
   projects: {
     title: 'Selected work',
     intro: 'Research and engineering projects, from production robots to learned policies.',
     items: [
+      {
+        title: 'Two hands, one policy',
+        context: 'Companion study to Diffusion Policy, 2026',
+        summary:
+          'Diffusion Policy handles two arms by concatenating them into one action vector, and never ablates that choice. I built a two-hand Push-T with a scripted force-couple expert and compared three factorisations of the two-hand action distribution under one recipe on identical data. Joint and leader–follower are indistinguishable at 0.964 coverage; independent sampling loses ten points of success with the same marginals. A single flow-matching step cuts latency a hundredfold, and three rounds of DAgger made the policy worse in a way that took measurement rather than tuning to explain.',
+        tags: ['Diffusion policy', 'Flow matching', 'Imitation learning', 'DAgger', 'PyTorch'],
+        href: '/en/work/two-hands-one-policy/',
+        hrefLabel: 'Read the case study',
+      },
       {
         title: 'AI-corrected trajectories for automated fiber placement',
         context: 'AMVALOR, PIMM and LCFC laboratories, since 2023',
