@@ -22,6 +22,8 @@ export const twoHandsFr: CaseStudy = {
     paperHref: '/papers/two-hands-one-policy.pdf',
     arxivHref: null,
     arxivLabel: 'arXiv',
+    repoHref: 'https://github.com/pedram-aminharati/two-hands-one-policy',
+    repoLabel: 'Code sur GitHub',
   },
 
   stats: [

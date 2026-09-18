@@ -13,6 +13,9 @@ export interface Project {
   hrefLabel?: string;
   /** Silent looping clip shown on the card. Requires href. */
   preview?: { src: string; label: string };
+  /** Source repository, shown as a secondary link on the card. */
+  repoHref?: string;
+  repoLabel?: string;
 }
 
 export interface Job {
@@ -74,6 +77,8 @@ export interface CaseStudy {
     /** Set once the preprint is up; the link stays hidden until then. */
     arxivHref: string | null;
     arxivLabel: string;
+    repoHref: string;
+    repoLabel: string;
   };
   stats: { value: string; label: string }[];
   video: {

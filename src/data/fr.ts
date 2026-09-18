@@ -62,6 +62,8 @@ export const fr: SiteContent = {
           src: '/work/two-hands/expert-seed100000.mp4',
           label: 'Voir deux mains faire tourner le bloc par un couple de forces',
         },
+        repoHref: 'https://github.com/pedram-aminharati/two-hands-one-policy',
+        repoLabel: 'Code sur GitHub',
       },
       {
         title: 'Trajectoires corrigées par IA pour le placement automatisé de fibres',

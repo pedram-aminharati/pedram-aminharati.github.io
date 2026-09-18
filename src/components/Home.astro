@@ -59,10 +59,15 @@ const emailHtml = encode(t.contact.email);
                 ))}
               </ul>
               {p.href && (
-                <p class="mt-4">
+                <p class="mt-4 flex flex-wrap gap-3">
                   <a class="btn btn-secondary" href={p.href}>
                     {p.hrefLabel}
                   </a>
+                  {p.repoHref && (
+                    <a class="btn btn-secondary" href={p.repoHref} rel="noopener">
+                      {p.repoLabel}
+                    </a>
+                  )}
                 </p>
               )}
             </article>

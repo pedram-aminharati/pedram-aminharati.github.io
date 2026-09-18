@@ -80,6 +80,7 @@ const AFTER_DAGGER = 'dagger';
           <p class="standfirst">{t.hero.standfirst}</p>
           <p class="actions">
             <a class="btn btn-primary" href={t.hero.paperHref}>{t.hero.paperLabel}</a>
+            <a class="btn btn-secondary" href={t.hero.repoHref} rel="noopener">{t.hero.repoLabel}</a>
             {t.hero.arxivHref && <a class="btn btn-secondary" href={t.hero.arxivHref}>{t.hero.arxivLabel}</a>}
           </p>
           <StatStrip stats={t.stats} />
@@ -169,6 +170,7 @@ const AFTER_DAGGER = 'dagger';
             <p class="closing">{t.close.text}</p>
             <p class="actions">
               <a class="btn btn-primary" href={t.hero.paperHref}>{t.close.cta}</a>
+              <a class="btn btn-secondary" href={t.hero.repoHref} rel="noopener">{t.hero.repoLabel}</a>
             </p>
           </div>
         </section>

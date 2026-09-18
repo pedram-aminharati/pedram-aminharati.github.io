@@ -62,6 +62,8 @@ export const en: SiteContent = {
           src: '/work/two-hands/expert-seed100000.mp4',
           label: 'Watch two hands rotate the block with a force couple',
         },
+        repoHref: 'https://github.com/pedram-aminharati/two-hands-one-policy',
+        repoLabel: 'Code on GitHub',
       },
       {
         title: 'AI-corrected trajectories for automated fiber placement',
