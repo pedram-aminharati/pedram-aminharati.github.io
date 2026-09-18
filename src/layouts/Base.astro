@@ -21,7 +21,12 @@ const person = {
   url: canonical,
   address: { '@type': 'PostalAddress', addressLocality: 'Paris', addressCountry: 'FR' },
   alumniOf: ['Arts et Métiers ParisTech', 'Universität Klagenfurt', 'K. N. Toosi University of Technology', 'Sharif University of Technology'],
-  sameAs: ['https://www.linkedin.com/in/pedram-aminharati-298b3376/', 'https://github.com/pedram-aminharati'],
+  sameAs: [
+    'https://www.linkedin.com/in/pedram-aminharati-298b3376/',
+    'https://github.com/pedram-aminharati',
+    t.publications.scholarUrl,
+    t.publications.orcidUrl,
+  ],
 };
 ---
 

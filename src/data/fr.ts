@@ -159,8 +159,11 @@ export const fr: SiteContent = {
   publications: {
     title: 'Publications',
     readLabel: 'Lire l’article',
-    orcidLabel: 'ORCID 0009-0008-2062-8571',
+    profilesLabel: 'Également référencé sur',
+    orcidLabel: 'ORCID',
     orcidUrl: 'https://orcid.org/0009-0008-2062-8571',
+    scholarLabel: 'Google Scholar',
+    scholarUrl: 'https://scholar.google.com/citations?user=YiT53J4AAAAJ&hl=fr',
     items: [
       {
         authors: 'Aminharati P., Shirinbayan M., Benfriha K., Meraghni F., Fitoussi J.',

@@ -112,10 +112,10 @@ const emailHtml = encode(t.contact.email);
           ))
         }
       </ol>
-      <p class="mt-10 border-t border-line pt-6">
-        <a class="link font-display text-lg" href={t.publications.orcidUrl} rel="noopener">
-          {t.publications.orcidLabel}
-        </a>
+      <p class="mt-10 flex flex-wrap items-baseline gap-x-6 gap-y-2 border-t border-line pt-6 font-display text-lg">
+        <span class="text-muted">{t.publications.profilesLabel}</span>
+        <a class="link" href={t.publications.scholarUrl} rel="noopener">{t.publications.scholarLabel}</a>
+        <a class="link" href={t.publications.orcidUrl} rel="noopener">{t.publications.orcidLabel}</a>
       </p>
     </Section>
 

@@ -138,7 +138,16 @@ export interface SiteContent {
   teachingBand: { alt: string; caption: string; place: string };
   projects: { title: string; intro: string; items: Project[] };
   experience: { title: string; items: Job[] };
-  publications: { title: string; readLabel: string; orcidLabel: string; orcidUrl: string; items: Publication[] };
+  publications: {
+    title: string;
+    readLabel: string;
+    profilesLabel: string;
+    orcidLabel: string;
+    orcidUrl: string;
+    scholarLabel: string;
+    scholarUrl: string;
+    items: Publication[];
+  };
   skills: { title: string; groups: { name: string; items: string[] }[] };
   education: {
     title: string;
